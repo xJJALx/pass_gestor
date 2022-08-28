@@ -64,11 +64,8 @@ class _PassList extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 itemCount: 30,
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    shadowColor: Colors.cyan,
-                    child: ListTile(leading: Text('$index')),
-                  );
+                itemBuilder: ( _, __) {
+                  return const PassCard();
                 },
               ),
             ),
@@ -78,6 +75,7 @@ class _PassList extends StatelessWidget {
     );
   }
 }
+
 
 class _HeaderTitle extends StatelessWidget {
   const _HeaderTitle({Key? key}) : super(key: key);
