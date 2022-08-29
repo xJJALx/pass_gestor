@@ -1,42 +1,85 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
-class PassDetailsScreen extends StatelessWidget {
-  const PassDetailsScreen({Key? key}) : super(key: key);
+class PassDetailsScreen extends StatefulWidget {
+  PassDetailsScreen({Key? key}) : super(key: key);
+
+  final List<Widget> widgets = [];
+
+  @override
+  State<PassDetailsScreen> createState() => _PassDetailsScreenState();
+}
+
+class _PassDetailsScreenState extends State<PassDetailsScreen> {
+  bool _isEdit = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromARGB(255, 255, 167, 249),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 50),
+                const CardLarge(title: 'Contraseña', text: 'ACV******'),
+                const SizedBox(height: 50),
+                const _Info(),
+                const CardBig(text: 'Notas'),
+              ],
+            ),
+          ),
+          if (_isEdit)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+              child: Container(color: Colors.black.withOpacity(0.5)),
+            ),
+          ...widget.widgets,
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromARGB(255, 255, 207, 253),
+        onPressed: () {
+          _isEdit = !_isEdit;
+          _isEdit 
+            ? widget.widgets.add(const Popup()) 
+            : widget.widgets.removeLast();
+          setState(() {});
+        },
+        child: const Icon(
+          Icons.edit,
+          color: Color.fromARGB(255, 255, 167, 249),
+        ),
+      ),
+    );
+  }
+}
+
+class _Info extends StatelessWidget {
+  const _Info({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 167, 249),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
-            const CardLarge(title: 'Contraseña', text: 'ACV******'),
-            const SizedBox(height: 50),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: size.width * 0.07),
-              child: Column(
-                children: [
-                  Row(
-                    children: const [
-                      CardSmall(title: 'NOMBRE', text: 'jj@gmail.com'),
-                      CardSmall(title: 'LISTA', text: 'Emails'),
-                    ],
-                  ),
-                  Row(
-                    children: const [
-                      CardSmall(title: 'FECHA CREACIÓN', text: '13/03/1993'),
-                      CardSmall(title: 'FECHA MODIFICACIÓN', text: '13/03/1993'),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            const CardBig(text: 'Notas',)
-          ],
-        ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: size.width * 0.07),
+      child: Column(
+        children: [
+          Row(
+            children: const [
+              CardSmall(title: 'NOMBRE', text: 'jj@gmail.com'),
+              CardSmall(title: 'LISTA', text: 'Emails'),
+            ],
+          ),
+          Row(
+            children: const [
+              CardSmall(title: 'FECHA CREACIÓN', text: '13/03/1993'),
+              CardSmall(title: 'FECHA MODIFICACIÓN', text: '13/03/1993'),
+            ],
+          )
+        ],
       ),
     );
   }
@@ -160,3 +203,33 @@ class CardSmall extends StatelessWidget {
   }
 }
 
+class Popup extends StatelessWidget {
+  const Popup({Key? key, this.text = ''}) : super(key: key);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Column(
+        children: [
+          Card(
+            margin: const EdgeInsets.only(top: 210, left: 10, right: 10),
+            elevation: 5,
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              height: 370,
+              width: double.infinity,
+              child: Text(text),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
