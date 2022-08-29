@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Pass Gestor',
-      initialRoute: 'home',
+      initialRoute: 'pass-details',
       routes: appRoutes,
     );
   }
