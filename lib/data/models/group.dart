@@ -1,4 +1,4 @@
-class ListPass {
+class Group {
   int? id;
   String uid;
   String name;
@@ -6,7 +6,7 @@ class ListPass {
   DateTime? dateModify;
   bool active;
 
-  ListPass({
+  Group({
     required this.id,
     required this.uid,
     required this.name,

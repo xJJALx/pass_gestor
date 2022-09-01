@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:pass_gestor/ui/providers/pass_provider.dart';
 import 'package:pass_gestor/ui/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -22,6 +25,8 @@ class _PassControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final passProvider = Provider.of<PassProvider>(context);
+
     return Container(
       height: 200,
       padding: const EdgeInsets.all(35),
@@ -30,16 +35,25 @@ class _PassControl extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text('My home', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              Icon(Icons.arrow_drop_down),
+            children: [
+              Text(
+                passProvider.listSelected,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const Icon(Icons.arrow_drop_down),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
-              CircleAction(icon: Icons.abc, text: 'Nueva lista'),
-              CircleAction(icon: Icons.abc, text: 'Add'),
+            children: [
+              GestureDetector(
+                onTap: (() {}),
+                child: const CircleAction(icon: Icons.abc, text: 'Nueva lista'),
+              ),
+              GestureDetector(
+                onTap: (() {}),
+                child: const CircleAction(icon: Icons.abc, text: 'Add'),
+              ),
             ],
           ),
         ],
@@ -48,11 +62,15 @@ class _PassControl extends StatelessWidget {
   }
 }
 
+
+
 class _PassList extends StatelessWidget {
   const _PassList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final passProvider = Provider.of<PassProvider>(context);
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8),
@@ -63,8 +81,8 @@ class _PassList extends StatelessWidget {
             const SizedBox(height: 15),
             Expanded(
               child: ListView.builder(
-                itemCount: 30,
-                itemBuilder: ( _, __) {
+                itemCount: passProvider.passwords.length,
+                itemBuilder: (_, __) {
                   return const PassCard();
                 },
               ),
@@ -75,7 +93,6 @@ class _PassList extends StatelessWidget {
     );
   }
 }
-
 
 class _HeaderTitle extends StatelessWidget {
   const _HeaderTitle({Key? key}) : super(key: key);

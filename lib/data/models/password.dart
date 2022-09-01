@@ -1,4 +1,4 @@
-class ItemPass {
+class Password {
   int listpassId;
   String name;
   String password;
@@ -7,7 +7,7 @@ class ItemPass {
   bool active;
   String notes;
 
-  ItemPass({
+  Password({
     required this.listpassId,
     required this.name,
     required this.password,
