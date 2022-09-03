@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:pass_gestor/data/models/models.dart';
 import 'package:pass_gestor/ui/providers/pass_provider.dart';
 import 'package:pass_gestor/ui/widgets/widgets.dart';
 
@@ -36,11 +37,12 @@ class _PassControl extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                passProvider.listSelected,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const Icon(Icons.arrow_drop_down),
+              passProvider.groupSelected == null
+                  ? const Text(
+                      'No hay listas',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    )
+                  : _DropdownGroups(),
             ],
           ),
           Row(
@@ -48,11 +50,23 @@ class _PassControl extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: (() {}),
-                child: const CircleAction(icon: Icons.abc, text: 'Nueva lista'),
+                child: const CircleAction(
+                  icon: Icons.library_books_rounded,
+                  text: 'Nueva lista',
+                  bgColor: Colors.white,
+                  iconColor: Colors.black,
+                ),
               ),
               GestureDetector(
-                onTap: (() {}),
-                child: const CircleAction(icon: Icons.abc, text: 'Add'),
+                onTap: (() {
+                  passProvider.addPasswords(Password(listpassId: 99, name: 'name', password: 'password'));
+                }),
+                child: const CircleAction(
+                  icon: Icons.add,
+                  text: 'Añadir',
+                  bgColor: Colors.white,
+                  iconColor: Colors.black,
+                ),
               ),
             ],
           ),
@@ -62,7 +76,30 @@ class _PassControl extends StatelessWidget {
   }
 }
 
+class _DropdownGroups extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final passProvider = Provider.of<PassProvider>(context);
 
+    return DropdownButton<Group>(
+      value: passProvider.groupSelected,
+      icon: const Icon(Icons.arrow_drop_down),
+      style: const TextStyle(color: Colors.black),
+      focusColor: Colors.transparent,
+      underline: Container(height: 1, color: Colors.transparent),
+      onChanged: (Group? value) => passProvider.groupSelected = value!,
+      items: passProvider.groups.map<DropdownMenuItem<Group>>((Group value) {
+        return DropdownMenuItem<Group>(
+          value: value,
+          child: Text(
+            value.name,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
 
 class _PassList extends StatelessWidget {
   const _PassList({Key? key}) : super(key: key);

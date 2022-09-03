@@ -1,33 +1,43 @@
 import 'package:flutter/material.dart';
 
 import 'package:pass_gestor/data/models/models.dart';
-import 'package:pass_gestor/data/datasources/dataTests.dart';
+import 'package:pass_gestor/data/datasources/data_tests.dart';
 
 class PassProvider extends ChangeNotifier {
   List<Group> _groups = [];
   List<Password> _passwords = [];
 
-  late String _groupSelected;
-  late Password _passwordSelected;
+  late Password? _passwordSelected;
+  late Group? _groupSelected;
   late bool pinValidated;
 
   PassProvider() {
     pinValidated = false;
-    _groupSelected = 'No-List';
-    _passwordSelected = Password(listpassId: 0, name: 'pass', password: 'password');
+    _groupSelected = null;
 
     Future.delayed(const Duration(seconds: 3), (() => loadGroups(groupNameDataSource)));
     Future.delayed(const Duration(seconds: 3), (() => loadPasswords(itemPassDataSource)));
+    // Future.delayed(const Duration(seconds: 5), (() => loadPasswords([  Password(listpassId: 1, name: 'name', password: 'password'),])));
   }
 
-  String get listSelected => _groupSelected;
-  Password get passwordSelected => _passwordSelected;
-  List<Group> get group => _groups;
+  Group? get groupSelected => _groupSelected;
+  Password? get passwordSelected => _passwordSelected;
+  List<Group> get groups => _groups;
   List<Password> get passwords => _passwords;
 
+  set groupSelected(Group? group) {
+    _groupSelected = group;
+    notifyListeners();
+  }
+
+  set passwordSelected(Password? pass) {
+    _passwordSelected = pass;
+    notifyListeners();
+  }
 
   loadGroups(List<Group> list) {
-    _groups = list;
+    _groups = [..._groups, ...list];
+    _groupSelected = _groups[0];
     notifyListeners();
   }
 
@@ -36,5 +46,13 @@ class PassProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  addPasswords(Password pass) {
+    _passwords.add(pass);
+    notifyListeners();
+  }
 
+  addGroups(Group group) {
+    _groups.add(group);
+    notifyListeners();
+  }
 }
