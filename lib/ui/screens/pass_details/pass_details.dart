@@ -16,7 +16,7 @@ class _PassDetailsScreenState extends State<PassDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 167, 249),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -39,7 +39,7 @@ class _PassDetailsScreenState extends State<PassDetailsScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromARGB(255, 255, 207, 253),
+        backgroundColor:  Theme.of(context).floatingActionButtonTheme.backgroundColor,
         onPressed: () {
           _isEdit = !_isEdit;
           _isEdit 
@@ -47,14 +47,15 @@ class _PassDetailsScreenState extends State<PassDetailsScreen> {
             : widget.widgets.removeLast();
           setState(() {});
         },
-        child: const Icon(
+        child: Icon(
           Icons.edit,
-          color: Color.fromARGB(255, 255, 167, 249),
+          color: Theme.of(context).cardColor.withOpacity(0.75),
         ),
       ),
     );
   }
 }
+
 
 class _Info extends StatelessWidget {
   const _Info({Key? key}) : super(key: key);
@@ -107,7 +108,7 @@ class CardLarge extends StatelessWidget {
           Card(
             margin: const EdgeInsets.all(12),
             elevation: 0,
-            color: Color.fromARGB(255, 255, 207, 253),
+            color: Theme.of(context).cardColor.withOpacity(0.8),
             child: SizedBox(
               height: 75,
               width: double.infinity,
@@ -136,7 +137,7 @@ class CardBig extends StatelessWidget {
           Card(
             margin: const EdgeInsets.all(12),
             elevation: 0,
-            color: Color.fromARGB(255, 255, 192, 252).withOpacity(0.85),
+            color: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -167,7 +168,7 @@ class CardSmall extends StatelessWidget {
         Card(
           margin: EdgeInsets.symmetric(horizontal: size.width * 0.04, vertical: size.width * 0.02),
           elevation: 0,
-          color: Color.fromARGB(255, 255, 192, 252).withOpacity(0.85),
+          color: Theme.of(context).cardColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),

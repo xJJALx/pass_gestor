@@ -32,16 +32,13 @@ class _PassControl extends StatelessWidget {
       height: 200,
       padding: const EdgeInsets.all(35),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               passProvider.groupSelected == null
-                  ? const Text(
-                      'No hay listas',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    )
+                  ? Text('No hay listas', style: Theme.of(context).textTheme.titleLarge)
                   : _DropdownGroups(),
             ],
           ),
@@ -52,9 +49,7 @@ class _PassControl extends StatelessWidget {
                 onTap: (() {}),
                 child: const CircleAction(
                   icon: Icons.library_books_rounded,
-                  text: 'Nueva lista',
-                  bgColor: Colors.white,
-                  iconColor: Colors.black,
+                  text: 'Nueva lista'
                 ),
               ),
               GestureDetector(
@@ -63,9 +58,7 @@ class _PassControl extends StatelessWidget {
                 }),
                 child: const CircleAction(
                   icon: Icons.add,
-                  text: 'Añadir',
-                  bgColor: Colors.white,
-                  iconColor: Colors.black,
+                  text: 'Añadir'
                 ),
               ),
             ],
@@ -84,17 +77,14 @@ class _DropdownGroups extends StatelessWidget {
     return DropdownButton<Group>(
       value: passProvider.groupSelected,
       icon: const Icon(Icons.arrow_drop_down),
-      style: const TextStyle(color: Colors.black),
+      style: Theme.of(context).textTheme.titleLarge,
       focusColor: Colors.transparent,
       underline: Container(height: 1, color: Colors.transparent),
       onChanged: (Group? value) => passProvider.groupSelected = value!,
       items: passProvider.groups.map<DropdownMenuItem<Group>>((Group value) {
         return DropdownMenuItem<Group>(
           value: value,
-          child: Text(
-            value.name,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
+          child: Text(value.name),
         );
       }).toList(),
     );
@@ -136,15 +126,11 @@ class _HeaderTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.only(left: 15),
       child: Text(
         'Tus contraseñas',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.black54,
-        ),
+        style: Theme.of(context).textTheme.titleSmall,
       ),
     );
   }
