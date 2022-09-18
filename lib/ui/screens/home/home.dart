@@ -37,9 +37,9 @@ class _PassControl extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              passProvider.groupSelected == null
-                  ? Text('No hay listas', style: Theme.of(context).textTheme.titleLarge)
-                  : _DropdownGroups(),
+              passProvider.groupSelected == null 
+                ? Text('No hay listas', style: Theme.of(context).textTheme.titleLarge) 
+                : _DropdownGroups(),
             ],
           ),
           Row(
@@ -49,22 +49,92 @@ class _PassControl extends StatelessWidget {
                 onTap: (() {}),
                 child: const CircleAction(
                   icon: Icons.library_books_rounded,
-                  text: 'Nueva lista'
+                  text: 'Nueva lista',
                 ),
               ),
               GestureDetector(
-                onTap: (() {
-                  passProvider.addPasswords(Password(listpassId: 99, name: 'name', password: 'password'));
-                }),
-                child: const CircleAction(
-                  icon: Icons.add,
-                  text: 'Añadir'
-                ),
+                onTap: (() => _addPass(context)),
+                child: const CircleAction(icon: Icons.add, text: 'Añadir'),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Future<dynamic> _addPass(BuildContext context) {
+    TextEditingController nameCtrl = TextEditingController();
+    TextEditingController passCtrl = TextEditingController();
+    Password newPassword = Password(listpassId: 0, name: 'name', password: 'password');
+
+    return showDialog(
+      context: context,
+      builder: ((context) {
+        return AlertDialog(
+          title: const Text('Nueva contraseña'),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: nameCtrl,
+                    decoration: _customInput(
+                      context,
+                      'Nombre',
+                      Icons.alternate_email_outlined,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: passCtrl,
+                    decoration: _customInput(
+                      context,
+                      'Contraseña',
+                      Icons.password_outlined,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 35),
+            ElevatedButton(
+              onPressed: () {
+                newPassword.name = nameCtrl.text;
+                newPassword.password = passCtrl.text;
+                if(nameCtrl.text.isNotEmpty && passCtrl.text.isNotEmpty){
+                Provider.of<PassProvider>(context, listen: false).addPasswords(newPassword);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).hintColor,
+                onPrimary: Colors.white,
+                shape: const StadiumBorder(),
+              ),
+              child: const Text('Añadir'),
+            )
+          ],
+        );
+      }),
+    );
+  }
+
+  InputDecoration _customInput(BuildContext context, String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(
+        color: Theme.of(context).textTheme.labelMedium!.color, //<-- SEE HERE
+      ),
+      border: const OutlineInputBorder(),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(width: 2, color: Theme.of(context).highlightColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(width: 2, color: Theme.of(context).hintColor),
+      ),
+      // errorText: 'Error message',
+      suffixIcon: Icon(icon, color: Theme.of(context).primaryColor),
     );
   }
 }
@@ -96,7 +166,7 @@ class _PassList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final passProvider = Provider.of<PassProvider>(context);
+    final passwords = Provider.of<PassProvider>(context).passwords;
 
     return Expanded(
       child: Padding(
@@ -108,9 +178,9 @@ class _PassList extends StatelessWidget {
             const SizedBox(height: 15),
             Expanded(
               child: ListView.builder(
-                itemCount: passProvider.passwords.length,
-                itemBuilder: (_, __) {
-                  return const PassCard();
+                itemCount: passwords.length,
+                itemBuilder: (_, i) {
+                  return PassCard(passwords[i]);
                 },
               ),
             ),
@@ -127,7 +197,7 @@ class _HeaderTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 15),
+      padding: const EdgeInsets.only(left: 15),
       child: Text(
         'Tus contraseñas',
         style: Theme.of(context).textTheme.titleSmall,

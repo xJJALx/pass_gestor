@@ -1,6 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:pass_gestor/ui/providers/pass_provider.dart';
+import 'package:pass_gestor/ui/widgets/widgets.dart';
+
 
 class PassDetailsScreen extends StatefulWidget {
   PassDetailsScreen({Key? key}) : super(key: key);
@@ -15,6 +20,8 @@ class _PassDetailsScreenState extends State<PassDetailsScreen> {
   bool _isEdit = false;
   @override
   Widget build(BuildContext context) {
+    final password = Provider.of<PassProvider>(context).passwordSelected;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
@@ -23,10 +30,10 @@ class _PassDetailsScreenState extends State<PassDetailsScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 50),
-                const CardLarge(title: 'Contraseña', text: 'ACV******'),
+                CardLarge(title: 'Contraseña', text: password!.password),
                 const SizedBox(height: 50),
                 const _Info(),
-                const CardBig(text: 'Notas'),
+                CardBig(text: password.notes),
               ],
             ),
           ),
@@ -39,7 +46,7 @@ class _PassDetailsScreenState extends State<PassDetailsScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor:  Theme.of(context).floatingActionButtonTheme.backgroundColor,
+        backgroundColor: Theme.of(context).floatingActionButtonTheme.backgroundColor,
         onPressed: () {
           _isEdit = !_isEdit;
           _isEdit 
@@ -56,12 +63,13 @@ class _PassDetailsScreenState extends State<PassDetailsScreen> {
   }
 }
 
-
 class _Info extends StatelessWidget {
   const _Info({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final password = Provider.of<PassProvider>(context).passwordSelected;
+    final group = Provider.of<PassProvider>(context).groupSelected;
     final size = MediaQuery.of(context).size;
 
     return Padding(
@@ -69,15 +77,15 @@ class _Info extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            children: const [
-              CardSmall(title: 'NOMBRE', text: 'jj@gmail.com'),
-              CardSmall(title: 'LISTA', text: 'Emails'),
+            children: [
+              CardSmall(title: 'NOMBRE', text: password!.name),
+              CardSmall(title: 'LISTA', text: group!.name),
             ],
           ),
           Row(
-            children: const [
-              CardSmall(title: 'FECHA CREACIÓN', text: '13/03/1993'),
-              CardSmall(title: 'FECHA MODIFICACIÓN', text: '13/03/1993'),
+            children: [
+              CardSmall(title: 'FECHA CREACIÓN', text: password.dateCreation.toString()),
+              CardSmall(title: 'FECHA MODIFICACIÓN', text: password.dateModify.toString()),
             ],
           )
         ],
@@ -204,33 +212,3 @@ class CardSmall extends StatelessWidget {
   }
 }
 
-class Popup extends StatelessWidget {
-  const Popup({Key? key, this.text = ''}) : super(key: key);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Column(
-        children: [
-          Card(
-            margin: const EdgeInsets.only(top: 210, left: 10, right: 10),
-            elevation: 5,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              height: 370,
-              width: double.infinity,
-              child: Text(text),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
