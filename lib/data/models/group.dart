@@ -1,5 +1,5 @@
 class Group {
-  int? id;
+  String? id;
   String uid;
   String name;
   DateTime? dateCreation;

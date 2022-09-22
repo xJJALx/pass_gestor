@@ -1,5 +1,6 @@
 class Password {
-  int listpassId;
+  String? id;
+  String listpassId;
   String name;
   String password;
   DateTime? dateCreation;
@@ -8,6 +9,7 @@ class Password {
   String notes;
 
   Password({
+    required this.id,
     required this.listpassId,
     required this.name,
     required this.password,
