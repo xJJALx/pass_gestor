@@ -21,8 +21,29 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _PassControl extends StatelessWidget {
+
+// Actualizar el estado del widget hijo desde el padre (Botón de añadir, muestra el input en rojo si no está cumplimentado)
+// https://stackoverflow.com/questions/48481590/how-to-set-update-state-of-statefulwidget-from-other-statefulwidget-in-flutter
+class _PassControl extends StatefulWidget {
   const _PassControl({Key? key}) : super(key: key);
+
+  @override
+  State<_PassControl> createState() => _PassControlState();
+}
+
+class _PassControlState extends State<_PassControl> {
+  final GlobalKey<_CustomInputState> _nameChildKey = GlobalKey();
+  final GlobalKey<_CustomInputState> _passChildKey = GlobalKey();
+
+  TextEditingController nameCtrl = TextEditingController();
+  TextEditingController passCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    passCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +74,7 @@ class _PassControl extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: (() => _addPass(context)),
+                onTap: (() => _addPass()),
                 child: const CircleAction(icon: Icons.add, text: 'Añadir'),
               ),
             ],
@@ -63,14 +84,11 @@ class _PassControl extends StatelessWidget {
     );
   }
 
-  Future<dynamic> _addPass(BuildContext context) {
-    TextEditingController nameCtrl = TextEditingController();
-    TextEditingController passCtrl = TextEditingController();
-    Password newPassword = Password(listpassId: 0, name: 'name', password: 'password');
-
+  Future<dynamic> _addPass() {
     return showDialog(
       context: context,
       builder: ((context) {
+        // return StatefulBuilder(builder: (context, StateSetter setState) {
         return AlertDialog(
           title: const Text('Nueva contraseña'),
           actions: [
@@ -78,22 +96,18 @@ class _PassControl extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: Column(
                 children: [
-                  TextField(
+                  CustomInput(
+                    key: _nameChildKey,
                     controller: nameCtrl,
-                    decoration: _customInput(
-                      context,
-                      'Nombre',
-                      Icons.alternate_email_outlined,
-                    ),
+                    name: 'Nombre',
+                    icon: Icons.alternate_email,
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  CustomInput(
+                    key: _passChildKey,
                     controller: passCtrl,
-                    decoration: _customInput(
-                      context,
-                      'Contraseña',
-                      Icons.password_outlined,
-                    ),
+                    name: 'Contraseña',
+                    icon: Icons.password,
                   ),
                 ],
               ),
@@ -101,10 +115,20 @@ class _PassControl extends StatelessWidget {
             const SizedBox(height: 35),
             ElevatedButton(
               onPressed: () {
-                newPassword.name = nameCtrl.text;
-                newPassword.password = passCtrl.text;
-                if(nameCtrl.text.isNotEmpty && passCtrl.text.isNotEmpty){
-                Provider.of<PassProvider>(context, listen: false).addPasswords(newPassword);
+                final passProvider = Provider.of<PassProvider>(context, listen: false);
+                if (nameCtrl.text.isEmpty) _nameChildKey.currentState!.validateInput();
+                if (passCtrl.text.isEmpty) _passChildKey.currentState!.validateInput();
+
+                //TODO: Comprobar que hay un grupo seleccionado antes de crear, por ejemplo si no hay internet?
+                if (nameCtrl.text.isNotEmpty && passCtrl.text.isNotEmpty) {
+                  Password newPassword = Password(
+                    id:'',
+                    listpassId: passProvider.groupSelected!.id!,
+                    name: nameCtrl.text,
+                    password: passCtrl.text,
+                  );
+
+                  passProvider.addPassword(newPassword);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -116,26 +140,65 @@ class _PassControl extends StatelessWidget {
             )
           ],
         );
+        // });
       }),
     );
   }
+}
 
-  InputDecoration _customInput(BuildContext context, String label, IconData icon) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(
-        color: Theme.of(context).textTheme.labelMedium!.color, //<-- SEE HERE
+class CustomInput extends StatefulWidget {
+  const CustomInput({
+    Key? key,
+    required this.controller,
+    required this.name,
+    required this.icon,
+    // required this.function,
+  }) : super(key: key);
+
+  final TextEditingController controller;
+  final String name;
+  final IconData icon;
+  // final VoidCallback function;
+
+  @override
+  State<CustomInput> createState() => _CustomInputState();
+}
+
+class _CustomInputState extends State<CustomInput> {
+  // Inicializado en true para que no muestre error nada mas abrir el popup
+  bool isValid = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.controller,
+      onChanged: (value) {
+        setState(() {
+          value.isEmpty ? isValid = false : isValid = true;
+        });
+      },
+      decoration: InputDecoration(
+        labelText: widget.name,
+        labelStyle: TextStyle(
+          color: Theme.of(context).textTheme.labelMedium!.color,
+        ),
+        border: const OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(width: 2, color: Theme.of(context).highlightColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(width: 2, color: Theme.of(context).hintColor),
+        ),
+        errorText: !isValid ? 'Campo obligatorio' : null,
+        suffixIcon: Icon(widget.icon, color: Theme.of(context).primaryColor),
       ),
-      border: const OutlineInputBorder(),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(width: 2, color: Theme.of(context).highlightColor),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(width: 2, color: Theme.of(context).hintColor),
-      ),
-      // errorText: 'Error message',
-      suffixIcon: Icon(icon, color: Theme.of(context).primaryColor),
     );
+  }
+
+  validateInput() {
+    setState(() {
+      widget.controller.text.isEmpty ? isValid = false : isValid = true;
+    });
   }
 }
 

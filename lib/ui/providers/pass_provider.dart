@@ -35,6 +35,16 @@ class PassProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  setPasswords(Password pass) {
+    _passwords.add(pass);
+    notifyListeners();
+  }
+
+  setGroups(Group group) {
+    _groups.add(group);
+    notifyListeners();
+  }
+
   loadGroups(List<Group> list) {
     _groups = [..._groups, ...list];
     _groupSelected = _groups[0];
@@ -46,13 +56,12 @@ class PassProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  addPasswords(Password pass) {
-    _passwords.add(pass);
-    notifyListeners();
+  addGroup(Group group) {
+    //TODO Insertar en BD
   }
 
-  addGroups(Group group) {
-    _groups.add(group);
-    notifyListeners();
+  addPassword(Password pass) {
+    //TODO Insertar en BD
+    setPasswords(pass);
   }
 }
