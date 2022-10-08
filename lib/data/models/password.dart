@@ -18,4 +18,29 @@ class Password {
     this.active = true,
     this.notes = '',
   });
+
+  // Model: PasswordResponse
+  factory Password.fromJson(Map<String, dynamic> json) => Password(
+        id: json["id"],
+        listpassId: json["listpassId"],
+        name: json["name"],
+        password: json["password"],
+        dateCreation: DateTime.parse(json["dateCreation"]),
+        dateModify: json["dateModify"],
+        active: json["active"] ?? true,
+        notes: json["datenotesModify"] ?? '',
+      );
+
+  // Model: PasswordResponse
+  Map<String, dynamic> toJson() => {
+        "listpassId": listpassId,
+        "name": name,
+        "id": id,
+        "password": password,
+        "dateCreation": dateCreation,
+        "dateModify": dateModify,
+        "active": active,
+        "notes": notes,
+      };
 }
+ 

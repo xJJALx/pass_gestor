@@ -21,7 +21,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-
 // Actualizar el estado del widget hijo desde el padre (Botón de añadir, muestra el input en rojo si no está cumplimentado)
 // https://stackoverflow.com/questions/48481590/how-to-set-update-state-of-statefulwidget-from-other-statefulwidget-in-flutter
 class _PassControl extends StatefulWidget {
@@ -114,7 +113,7 @@ class _PassControlState extends State<_PassControl> {
             ),
             const SizedBox(height: 35),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final passProvider = Provider.of<PassProvider>(context, listen: false);
                 if (nameCtrl.text.isEmpty) _nameChildKey.currentState!.validateInput();
                 if (passCtrl.text.isEmpty) _passChildKey.currentState!.validateInput();
@@ -122,18 +121,31 @@ class _PassControlState extends State<_PassControl> {
                 //TODO: Comprobar que hay un grupo seleccionado antes de crear, por ejemplo si no hay internet?
                 if (nameCtrl.text.isNotEmpty && passCtrl.text.isNotEmpty) {
                   Password newPassword = Password(
-                    id:'',
+                    id: '',
                     listpassId: passProvider.groupSelected!.id!,
                     name: nameCtrl.text,
                     password: passCtrl.text,
+                    dateCreation: DateTime.now(),
                   );
 
-                  passProvider.addPassword(newPassword);
+                  final passAdded = await passProvider.addPassword(newPassword);
+
+                  if (passAdded) {
+                    nameCtrl.clear();
+                    passCtrl.clear();
+
+                    if (!mounted) return; // https://stackoverflow.com/questions/68871880/do-not-use-buildcontexts-across-async-gaps
+                    Navigator.pop(context);
+
+                    _showConfirmation('Contraseña añadida');
+                  } else {
+                    _showError('Ha ocurrido un error');
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).hintColor,
-                onPrimary: Colors.white,
+                backgroundColor: Theme.of(context).hintColor,
+                foregroundColor: Colors.white,
                 shape: const StadiumBorder(),
               ),
               child: const Text('Añadir'),
@@ -142,6 +154,26 @@ class _PassControlState extends State<_PassControl> {
         );
         // });
       }),
+    );
+  }
+
+  _showConfirmation(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      CustomSnackbar(
+        message: message,
+        bgColor: Theme.of(context).hintColor,
+        textColor: Colors.black,
+      ),
+    );
+  }
+
+  _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      CustomSnackbar(
+        title: 'Oh!',
+        message: message,
+        bgColor: Colors.redAccent,
+      ),
     );
   }
 }
