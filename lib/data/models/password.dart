@@ -33,9 +33,9 @@ class Password {
 
   // Model: PasswordResponse
   Map<String, dynamic> toJson() => {
+        "id": id,
         "listpassId": listpassId,
         "name": name,
-        "id": id,
         "password": password,
         "dateCreation": dateCreation,
         "dateModify": dateModify,

@@ -22,7 +22,7 @@ class PassProvider extends ChangeNotifier {
 
     Future.delayed(const Duration(seconds: 3), (() => loadGroups(groupNameDataSource)));
     getPasswords();
- }
+  }
 
   Group? get groupSelected => _groupSelected;
   Password? get passwordSelected => _passwordSelected;
@@ -57,7 +57,6 @@ class PassProvider extends ChangeNotifier {
       uri,
       headers: {'Content-Type': 'application/json'},
     );
-
     final data = jsonDecode(resp.body);
     final passwordsJson = data['passwords'];
 
@@ -76,14 +75,38 @@ class PassProvider extends ChangeNotifier {
     notifyListeners();
   }
 
- loadPasswords(List<Password> list) {
+  loadPasswords(List<Password> list) {
     _passwords = [...list];
     notifyListeners();
     // list.map((city) => debugPrint(city.active.toString())).toList();
   }
 
-  addGroup(Group group) {
-    //TODO Insertar en BD
+  Future<bool> addGroup(Group group) async {
+    bool isAdded = false;
+    final data = {
+      "uid": group.uid,
+      "name": group.name,
+      "dateCreation": group.dateCreation!.toIso8601String(),
+      "dateModify": null,
+      "active": group.active,
+    };
+
+    final uri = Uri.parse('$apiUrl/groups/addGroup');
+    final resp = await http.post(
+      uri,
+      body: jsonEncode(data),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (resp.statusCode == 200) {
+      final groupResponse = groupResponseFromJson(resp.body);
+
+      isAdded = true;
+      group.id = groupResponse.group.id;
+      setGroups(group);
+    }
+
+    return isAdded;
   }
 
   // Modificamos los datos para evitar conflictos con el API(fechas)
@@ -93,10 +116,10 @@ class PassProvider extends ChangeNotifier {
       "listpassId": pass.listpassId,
       "name": pass.name,
       "password": pass.password,
-      "dateCreation" : pass.dateCreation!.toIso8601String(),
-      "dateModify" : null,
-      "active" : pass.active,
-      "notes" : pass.notes
+      "dateCreation": pass.dateCreation!.toIso8601String(),
+      "dateModify": null,
+      "active": pass.active,
+      "notes": pass.notes
     };
 
     final uri = Uri.parse('$apiUrl/passwords/addPass');

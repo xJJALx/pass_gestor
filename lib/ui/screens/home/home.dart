@@ -31,14 +31,17 @@ class _PassControl extends StatefulWidget {
 }
 
 class _PassControlState extends State<_PassControl> {
+  final GlobalKey<_CustomInputState> _groupChildKey = GlobalKey();
   final GlobalKey<_CustomInputState> _nameChildKey = GlobalKey();
   final GlobalKey<_CustomInputState> _passChildKey = GlobalKey();
 
+  TextEditingController groupCtrl = TextEditingController();
   TextEditingController nameCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
 
   @override
   void dispose() {
+    groupCtrl.dispose();
     nameCtrl.dispose();
     passCtrl.dispose();
     super.dispose();
@@ -66,11 +69,8 @@ class _PassControlState extends State<_PassControl> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               GestureDetector(
-                onTap: (() {}),
-                child: const CircleAction(
-                  icon: Icons.library_books_rounded,
-                  text: 'Nueva lista',
-                ),
+                onTap: (() => _addGroup()),
+                child: const CircleAction(icon: Icons.library_books_rounded, text: 'Nueva lista'),
               ),
               GestureDetector(
                 onTap: (() => _addPass()),
@@ -80,6 +80,69 @@ class _PassControlState extends State<_PassControl> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<dynamic> _addGroup() {
+    return showDialog(
+      context: context,
+      builder: ((context) {
+        // return StatefulBuilder(builder: (context, StateSetter setState) {
+        return AlertDialog(
+          title: const Text('Nueva lista'),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  CustomInput(
+                    key: _groupChildKey,
+                    controller: groupCtrl,
+                    name: 'Nombre',
+                    icon: Icons.group_work_rounded,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 35),
+            ElevatedButton(
+              onPressed: () async {
+                final passProvider = Provider.of<PassProvider>(context, listen: false);
+
+                if (groupCtrl.text.isEmpty) _groupChildKey.currentState!.validateInput();
+
+                if (groupCtrl.text.isNotEmpty) {
+                  Group newGroup = Group(
+                    id: '',
+                    uid: 'UID', // TODO: UID UserProvider?
+                    name: groupCtrl.text,
+                    dateCreation: DateTime.now(),
+                  );
+
+                  final groupAdded = await passProvider.addGroup(newGroup);
+
+                  if (groupAdded) {
+                    groupCtrl.clear();
+                    if (!mounted) return; // https://stackoverflow.com/questions/68871880/do-not-use-buildcontexts-across-async-gaps
+                    Navigator.pop(context);
+
+                    _showConfirmation('Lista añadida');
+                  } else {
+                    _showError('Ha ocurrido un error');
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).hintColor,
+                foregroundColor: Colors.white,
+                shape: const StadiumBorder(),
+              ),
+              child: const Text('Añadir'),
+            )
+          ],
+        );
+        // });
+      }),
     );
   }
 

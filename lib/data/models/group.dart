@@ -14,4 +14,27 @@ class Group {
     this.dateModify,
     this.active = true,
   });
+
+
+  // Model: GroupResponse
+  factory Group.fromJson(Map<String, dynamic> json) => Group(
+        id: json["id"],
+        uid: json["uid"],
+        name: json["name"],
+        dateCreation: DateTime.parse(json["dateCreation"]),
+        dateModify: json["dateModify"],
+        active: json["active"] ?? true,
+      );
+
+  // Model: GroupResponse
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "uid": uid,
+        "name": name,
+        "dateCreation": dateCreation,
+        "dateModify": dateModify,
+        "active": active,
+      };
 }
+
+ 
