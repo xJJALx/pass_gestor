@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:pass_gestor/ui/providers/theme_provider.dart';
-import 'package:pass_gestor/ui/providers/pass_provider.dart';
+import 'package:pass_gestor/ui/providers/providers.dart';
 import 'package:pass_gestor/ui/routes/routes.dart';
 
 void main() => runApp(const AppState());
@@ -14,6 +13,7 @@ class AppState extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PassProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: Provider.of<ThemeProvider>(context).getTheme,
       title: 'Pass Gestor',
-      initialRoute: 'home',
+      initialRoute: 'login',
       routes: appRoutes,
     );
   }
