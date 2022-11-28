@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: Provider.of<ThemeProvider>(context).getTheme,
       title: 'Pass Gestor',
-      initialRoute: 'login',
+      initialRoute: 'auth',
       routes: appRoutes,
     );
   }

@@ -63,7 +63,7 @@ class __FormState extends State<_Form> {
             textController: passCtrl,
           ),
           ButtonOval(
-            text: 'Ingresar',
+            text: 'Acceder',
             onPressed: authProvider.autenticando
                 ? null
                 : () async {

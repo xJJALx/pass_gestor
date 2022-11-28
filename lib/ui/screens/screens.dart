@@ -1,3 +1,4 @@
 export 'package:pass_gestor/ui/screens/login/login.dart';
 export 'package:pass_gestor/ui/screens/pass_details/pass_details.dart';
 export 'package:pass_gestor/ui/screens/home/home.dart';
+export 'package:pass_gestor/ui/screens/auth/auth_gate.dart';
