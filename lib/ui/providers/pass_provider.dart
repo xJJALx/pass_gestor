@@ -20,8 +20,7 @@ class PassProvider extends ChangeNotifier {
     pinValidated = false;
     _groupSelected = null;
 
-    Future.delayed(const Duration(seconds: 3), (() => loadGroups(groupNameDataSource)));
-    getPasswords();
+    getGroups().then((value) => getPasswords());
   }
 
   Group? get groupSelected => _groupSelected;
@@ -31,7 +30,8 @@ class PassProvider extends ChangeNotifier {
 
   set groupSelected(Group? group) {
     _groupSelected = group;
-    notifyListeners();
+    getPasswords();
+    notifyListeners(); 
   }
 
   set passwordSelected(Password? pass) {
@@ -52,7 +52,7 @@ class PassProvider extends ChangeNotifier {
   Future getPasswords() async {
     List<Password> passwords = [];
 
-    final uri = Uri.parse('$apiUrl/passwords');
+    final uri = Uri.parse('$apiUrl/passwords/${_groupSelected?.id}');
     final resp = await http.get(
       uri,
       headers: {'Content-Type': 'application/json'},
@@ -69,9 +69,29 @@ class PassProvider extends ChangeNotifier {
     }
   }
 
+  Future getGroups() async {
+    List<Group> groups = [];
+
+    final uri = Uri.parse('$apiUrl/groups');
+    final resp = await http.get(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+    );
+    final data = jsonDecode(resp.body);
+    final groupsJson = data['groups'];
+
+    if (resp.statusCode == 200) {
+      for (var i = 0; i < groupsJson.length; i++) {
+        final group = Group.fromJson(groupsJson[i]);
+        groups.add(group);
+      }
+      loadGroups(groups);
+    }
+  }
+
   loadGroups(List<Group> list) {
-    _groups = [..._groups, ...list];
-    _groupSelected = _groups[0];
+    _groups = [...list];
+    if (_groups.isNotEmpty) _groupSelected = _groups[0];
     notifyListeners();
   }
 
